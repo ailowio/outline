@@ -3,6 +3,8 @@ import showsData from '../../data/shows.json';
 
 const Dates = () => {
   return (
+    // Dados das próximas datas são carregados de src/data/shows.json
+    // Para editar, altere ou adicione itens naquele arquivo.
     <section id="datas" className="py-32 max-w-5xl mx-auto px-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
         <div>
@@ -12,12 +14,18 @@ const Dates = () => {
         <div className="h-px flex-1 bg-outline-neon/20 hidden md:block mb-4 mx-8" />
       </div>
 
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-outline-black/80 via-black to-outline-neon/5" />
+        <div className="relative rounded-3xl border border-outline-neon/20 bg-black/60 backdrop-blur-sm p-6 md:p-10 shadow-[0_0_40px_rgba(57,255,20,0.15)]">
+          <div className="absolute -top-3 -left-3 w-10 h-10 border-t-2 border-l-2 border-outline-neon/60 rounded-tl-3xl" />
+          <div className="absolute -bottom-3 -right-3 w-10 h-10 border-b-2 border-r-2 border-outline-neon/60 rounded-br-3xl" />
+
       <div className="grid gap-4">
         {showsData.length > 0 ? (
           showsData.map((show) => (
             <div 
               key={show.id} 
-              className="group flex flex-col md:flex-row md:items-center justify-between p-8 border border-outline-neon/10 bg-outline-black/50 hover:border-outline-neon/40 transition-all rounded-sm"
+              className="group flex flex-col md:flex-row md:items-center justify-between p-8 border border-outline-neon/10 bg-outline-black/60 hover:border-outline-neon/50 hover:bg-outline-black/80 transition-all rounded-md shadow-[0_0_25px_rgba(0,0,0,0.6)]"
             >
               <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-12 flex-1">
                 <div className="flex flex-col min-w-[80px]">
@@ -47,6 +55,8 @@ const Dates = () => {
             <p className="text-gray-500 italic">Novas datas em breve.</p>
           </div>
         )}
+      </div>
+        </div>
       </div>
     </section>
   );

@@ -2,6 +2,8 @@ import React from 'react';
 
 const About = () => {
   return (
+    // Texto da nossa história e imagem principal podem ser editados aqui.
+    // A caricatura usada vem de /public/caricatura.svg.
     <section id="about" className="py-32 bg-outline-black relative overflow-hidden">
       {/* Decorative text background */}
       <div className="absolute top-0 right-0 text-[15rem] font-black text-white/[0.02] select-none pointer-events-none italic -translate-y-1/2 translate-x-1/4">
@@ -22,7 +24,7 @@ const About = () => {
               O projeto começou de forma despretensiosa, unindo <span className="text-outline-neon font-medium italic">Rômulo Mascarenhas</span>, 
               <span className="text-outline-neon font-medium italic"> Pedro Fernandes</span>, 
               <span className="text-outline-neon font-medium italic"> Lucas Duarte</span> e 
-              <span className="text-outline-neon font-medium italic"> Arthur</span> em uma formação completa e explosiva.
+              <span className="text-outline-neon font-medium italic"> Arthur Cesar</span> em uma formação completa e explosiva.
             </p>
             <p>
               Exploramos uma diversidade de gêneros que conectam diferentes públicos: do <span className="text-white">Indie Rock</span> ao <span className="text-white">Grunge</span>, 
@@ -48,7 +50,7 @@ const About = () => {
             <img 
               src="/caricatura.svg" 
               alt="Caricatura Outline" 
-              className="w-56 md:w-72 h-auto opacity-90 hover:opacity-100 transition-opacity"
+              className="w-64 md:w-80 lg:w-96 h-auto opacity-90 hover:opacity-100 transition-opacity"
               loading="lazy"
             />
             <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-outline-neon" />

@@ -30,7 +30,7 @@ const Contact = () => {
             <p className="text-base font-medium text-gray-300 group-hover:text-outline-neon transition-colors duration-300">Instagram</p>
           </a>
           <a 
-            href="#" 
+            href="https://open.spotify.com/playlist/7gpEy18X6UOv0dxxn7Iae4" 
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 border border-outline-neon/20 hover:border-outline-neon/40 bg-outline-black/30 hover:bg-outline-black/50 transition-all duration-300 group flex items-center gap-3 rounded-sm"

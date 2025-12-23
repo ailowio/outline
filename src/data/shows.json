@@ -1,27 +1,34 @@
 [
   {
     "id": 1,
-    "date": "2024-01-12",
-    "time": "22:00",
-    "venue": "Budega do Raul",
+    "date": "2025-12-27",
+    "time": "21:00",
+    "venue": "Hey Joe Food n' Bar",
     "city": "Fortaleza - CE",
     "link": "https://www.instagram.com/outlinemusic_/"
   },
   {
     "id": 2,
-    "date": "2024-01-19",
-    "time": "21:30",
-    "venue": "Orla Praia Club",
+    "date": "2026-01-10",
+    "time": "22:00",
+    "venue": "Bulls Beer House Aldeota",
     "city": "Fortaleza - CE",
     "link": "https://www.instagram.com/outlinemusic_/"
   },
   {
     "id": 3,
-    "date": "2024-01-26",
-    "time": "23:00",
-    "venue": "88 Bier",
+    "date": "2026-01-24",
+    "time": "21:30",
+    "venue": "Bulls Beer House Parquelândia",
+    "city": "Fortaleza - CE",
+    "link": "https://www.instagram.com/outlinemusic_/"
+  },
+  {
+    "id": 4,
+    "date": "2026-01-30",
+    "time": "21:00",
+    "venue": "Hey Joe Food n' Bar",
     "city": "Fortaleza - CE",
     "link": "https://www.instagram.com/outlinemusic_/"
   }
 ]
-

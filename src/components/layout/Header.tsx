@@ -23,15 +23,16 @@ const Header = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || isMenuOpen ? 'bg-black/95 backdrop-blur-md py-3 border-b border-outline-neon/20' : 'bg-transparent py-6'
+        isScrolled || isMenuOpen ? 'bg-black/95 backdrop-blur-md py-3 border-b border-outline-neon/20' : 'bg-transparent py-4 md:py-5'
       }`}
     >
       <nav className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-        <a href="#hero" className="flex items-center">
+        <a href="#hero" className="flex items-center overflow-hidden">
           <img 
-            src="/logo.svg" 
+            src="/Logo-v3.svg" 
             alt="Outline" 
-            className="h-12 md:h-16 lg:h-20 w-auto"
+            className="h-10 md:h-12 lg:h-14 w-auto object-contain"
+            style={{ objectPosition: 'center' }}
           />
         </a>
         
@@ -40,9 +41,11 @@ const Header = () => {
             <li key={item.label}>
               <a 
                 href={item.href} 
-                className="text-xs uppercase tracking-widest font-bold hover:text-outline-neon transition-colors"
+                className="relative text-xs uppercase tracking-widest font-bold text-gray-300 hover:text-outline-neon transition-all duration-300 group px-3 py-2"
               >
-                {item.label}
+                <span className="relative z-10">{item.label}</span>
+                <span className="absolute inset-0 bg-outline-neon/10 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-sm" />
+                <span className="absolute bottom-0 left-0 right-0 h-px bg-outline-neon scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
             </li>
           ))}
@@ -77,7 +80,7 @@ const Header = () => {
                 <a 
                   href={item.href} 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block text-sm uppercase tracking-widest font-bold hover:text-outline-neon"
+                  className="block text-sm uppercase tracking-widest font-bold text-gray-300 hover:text-outline-neon transition-colors duration-300 relative pl-4 border-l-2 border-transparent hover:border-outline-neon/40"
                 >
                   {item.label}
                 </a>

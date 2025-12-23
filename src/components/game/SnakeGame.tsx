@@ -3,6 +3,8 @@ import { GameState, createInitialState, moveSnake, Direction } from './engine';
 import { drawGame } from './renderer';
 import CharacterSelector, { Integrante, integrantes } from './CharacterSelector';
 import { imageCache } from './imageCache';
+import { getTopScores, saveScore, ScoreRecord } from '../../lib/scoreDb';
+import Ranking from './Ranking';
 
 // Pré-carregar todas as caricaturas
 const preloadImages = () => {
@@ -32,6 +34,12 @@ const SnakeGame = () => {
   const [highScore, setHighScore] = useState(
     Number(localStorage.getItem('outline_snake_highscore') || 0)
   );
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [nickname, setNickname] = useState('');
+  const [hasSavedForRun, setHasSavedForRun] = useState(false);
+  const [ranking, setRanking] = useState<ScoreRecord[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   
   const requestRef = useRef<number>();
   const lastUpdateTimeRef = useRef<number>(0);
@@ -78,6 +86,8 @@ const SnakeGame = () => {
 
   const resetGame = () => {
     setState(createInitialState());
+    setHasSavedForRun(false);
+    setShowSaveModal(false);
   };
 
   const update = useCallback((time: number) => {
@@ -113,6 +123,43 @@ const SnakeGame = () => {
     requestRef.current = requestAnimationFrame(update);
   }, [state, highScore, selectedIntegrante]);
 
+  const loadRanking = useCallback(async () => {
+    try {
+      const scores = await getTopScores(10);
+      setRanking(scores);
+    } catch (err) {
+      console.error('[SnakeGame] Erro ao carregar ranking', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state.isGameOver) {
+      setShowSaveModal(true);
+      loadRanking();
+    }
+  }, [state.isGameOver, loadRanking]);
+
+  const handleSaveScore = async () => {
+    if (hasSavedForRun || state.score <= 0) {
+      setShowSaveModal(false);
+      return;
+    }
+    try {
+      setIsSaving(true);
+      setSaveError(null);
+      await saveScore(nickname.trim() || 'Anônimo', state.score);
+      setHasSavedForRun(true);
+      await loadRanking();
+      setShowSaveModal(false);
+    } catch (err) {
+      console.error('[SnakeGame] Erro ao salvar score', err);
+      setSaveError('Erro ao salvar. Tente novamente ou verifique o console.');
+      // Não fecha o modal se houver erro, para o usuário tentar novamente
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   useEffect(() => {
     if (!selectedIntegrante) return;
     
@@ -133,6 +180,7 @@ const SnakeGame = () => {
           // Reset game state when integrante is selected
           setState(createInitialState());
           lastUpdateTimeRef.current = 0;
+          setHasSavedForRun(false);
         }} />
       </div>
     );
@@ -172,18 +220,85 @@ const SnakeGame = () => {
         
         {state.isGameOver && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                resetGame();
-              }}
-              className="pointer-events-auto mt-24 px-8 py-3 bg-outline-neon text-black font-black text-xs uppercase tracking-widest hover:bg-white transition-all transform hover:scale-105"
-            >
-              Tentar Novamente
-            </button>
+            <div className="pointer-events-auto mt-16 bg-black/80 border border-outline-neon/40 rounded-md px-6 py-5 max-w-xs w-full text-center shadow-[0_0_30px_rgba(57,255,20,0.4)]">
+              <p className="text-sm font-bold text-outline-neon mb-2 uppercase tracking-widest">Game Over</p>
+              <p className="text-xs text-gray-300 mb-4">
+                Seu score: <span className="font-bold text-outline-neon">{state.score}</span>
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    resetGame();
+                  }}
+                  className="w-full px-4 py-2 bg-outline-neon text-black font-black text-[11px] uppercase tracking-widest hover:bg-white transition-all"
+                >
+                  Tentar Novamente
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowSaveModal(true);
+                  }}
+                  disabled={hasSavedForRun || state.score <= 0}
+                  className="w-full px-4 py-2 border border-outline-neon/60 text-outline-neon font-bold text-[11px] uppercase tracking-widest hover:bg-outline-neon hover:text-black transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {hasSavedForRun ? 'Score Salvo' : 'Salvar Score'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
+
+      {showSaveModal && !hasSavedForRun && state.score > 0 && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 px-4">
+          <div className="bg-outline-black border border-outline-neon/40 rounded-md p-6 w-full max-w-sm shadow-[0_0_40px_rgba(57,255,20,0.5)]">
+            <h3 className="text-sm font-bold text-outline-neon uppercase tracking-[0.25em] mb-4">
+              Salvar Score
+            </h3>
+            <p className="text-xs text-gray-300 mb-3">
+              Seu score foi{' '}
+              <span className="font-bold text-outline-neon">{state.score}</span>. Digite seu
+              nome para aparecer no ranking local.
+            </p>
+            <input
+              type="text"
+              maxLength={20}
+              value={nickname}
+              onChange={(e) => {
+                setNickname(e.target.value);
+                setSaveError(null);
+              }}
+              placeholder="Seu nome ou apelido"
+              className="w-full px-3 py-2 text-sm bg-black border border-outline-neon/40 rounded-sm text-gray-100 placeholder:text-gray-600 focus:outline-none focus:border-outline-neon mb-4"
+            />
+            {saveError && (
+              <p className="text-xs text-red-400 mb-3">{saveError}</p>
+            )}
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSaveModal(false);
+                  setSaveError(null);
+                }}
+                className="px-3 py-2 text-[11px] uppercase tracking-widest text-gray-400 hover:text-white"
+              >
+                Pular
+              </button>
+              <button
+                type="button"
+                disabled={isSaving}
+                onClick={handleSaveScore}
+                className="px-4 py-2 bg-outline-neon text-black font-black text-[11px] uppercase tracking-widest hover:bg-white transition-all disabled:opacity-60"
+              >
+                {isSaving ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 grid grid-cols-3 gap-2 md:hidden">
         <div />
@@ -226,6 +341,8 @@ const SnakeGame = () => {
       <p className="mt-6 text-gray-600 text-[10px] font-bold uppercase tracking-widest">
         Use as setas para controlar • Colete os itens 🍺🎸🎤🥁 e deixe o rastro de 💩
       </p>
+
+      <Ranking scores={ranking} />
     </div>
   );
 };

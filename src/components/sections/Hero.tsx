@@ -3,17 +3,19 @@ import { motion } from 'framer-motion';
 
 const Hero = () => {
   return (
-    <section id="hero" className="relative h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+    <section
+      id="hero"
+      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden"
+    >
       {/* Imagem de Fundo do Quarteto */}
-      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+      <div className="absolute -top-28 md:-top-36 left-0 right-0 bottom-0 w-full h-[calc(100%+7rem)] md:h-[calc(100%+9rem)] z-0 overflow-hidden">
         <motion.img
           src="/quarteto-street.png"
           alt="Outline - Quarteto"
-          className="w-full h-full object-cover"
-          style={{ objectPosition: '20% center' }}
-          initial={{ scale: 1.1 }}
+          className="w-full h-full object-contain object-center"
+          initial={{ scale: 1.0 }}
           animate={{ 
-            scale: [1.1, 1.05, 1.1],
+            scale: [1.0, 0.98, 1.0],
           }}
           transition={{ 
             duration: 15,
@@ -144,30 +146,31 @@ const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-xl md:text-3xl text-gray-200 mb-12 max-w-2xl mx-auto font-light tracking-wide drop-shadow-lg"
+          className="text-xl md:text-3xl text-gray-200 mb-12 md:mb-16 max-w-2xl mx-auto font-light tracking-wide drop-shadow-lg relative z-20"
         >
           CARISMA E SONORIDADE QUE SE ENCONTRAM.
         </motion.p>
+
+        {/* Seta dentro da seção Hero */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 1 }}
+          className="relative z-20 mt-4 md:mt-8"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-10 md:w-10 text-outline-neon/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </motion.div>
+        </motion.div>
       </motion.div>
 
       {/* Gradiente de transição suave para próxima seção */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-b from-transparent via-black/40 via-black/70 to-black z-10 pointer-events-none" />
-
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-outline-neon/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </motion.div>
-      </motion.div>
+      <div className="absolute bottom-0 left-0 right-0 h-96 md:h-[28rem] bg-gradient-to-b from-transparent via-transparent via-black/20 via-black/40 via-black/60 via-black/75 via-black/85 via-black/92 via-black/96 to-black z-10 pointer-events-none" />
     </section>
   );
 };
