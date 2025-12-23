@@ -1,4 +1,7 @@
-import initSqlJs, { Database, SqlJsStatic } from 'sql.js';
+// Importação dinâmica de sql.js para evitar erros de build
+type Database = any;
+type SqlJsStatic = any;
+let initSqlJs: ((config?: any) => Promise<SqlJsStatic>) | null = null;
 
 export interface ScoreRecord {
   id: number;
@@ -27,7 +30,7 @@ function loadFromLocalStorage(): Uint8Array | null {
       bytes[i] = binaryString.charCodeAt(i);
     }
     return bytes;
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('[scoreDb] Erro ao carregar DB do localStorage', err);
     return null;
   }
@@ -42,7 +45,7 @@ function saveToLocalStorage(db: Database) {
     }
     const base64 = btoa(binaryString);
     localStorage.setItem(STORAGE_KEY, base64);
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('[scoreDb] Erro ao salvar DB no localStorage', err);
   }
 }
@@ -58,21 +61,27 @@ async function getDb(): Promise<Database> {
   }
 
   if (!SQLPromise) {
-    SQLPromise = initSqlJs({
-      // Tenta múltiplos caminhos para o arquivo WASM
-      locateFile: (file: string) => {
-        // Primeiro tenta CDN
-        if (file.endsWith('.wasm')) {
-          return `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/${file}`;
-        }
-        return file;
-      },
-    }).catch((err) => {
-      console.error('[scoreDb] Erro ao inicializar sql.js, usando fallback', err);
-      initError = err;
-      useFallback = true;
-      throw err;
-    });
+    // Importação dinâmica de sql.js
+    SQLPromise = import('sql.js')
+      .then((sqlModule) => {
+        initSqlJs = sqlModule.default;
+        return initSqlJs({
+          // Tenta múltiplos caminhos para o arquivo WASM
+          locateFile: (file: string) => {
+            // Primeiro tenta CDN
+            if (file.endsWith('.wasm')) {
+              return `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/${file}`;
+            }
+            return file;
+          },
+        });
+      })
+      .catch((err: Error) => {
+        console.error('[scoreDb] Erro ao inicializar sql.js, usando fallback', err);
+        initError = err;
+        useFallback = true;
+        throw err;
+      });
   }
 
   try {
@@ -95,7 +104,7 @@ async function getDb(): Promise<Database> {
           );
         `);
         saveToLocalStorage(dbInstance);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('[scoreDb] Erro ao criar/restaurar DB', err);
         // Tenta criar um novo banco em memória
         dbInstance = new SQL.Database();
@@ -111,7 +120,7 @@ async function getDb(): Promise<Database> {
     }
 
     return dbInstance;
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('[scoreDb] Erro fatal ao obter DB', err);
     throw err;
   }
@@ -136,7 +145,7 @@ function saveScoreFallback(nickname: string, score: number): void {
     // Mantém apenas os top 100
     const topScores = scores.slice(0, 100);
     localStorage.setItem(FALLBACK_STORAGE_KEY, JSON.stringify(topScores));
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('[scoreDb] Erro no fallback saveScore', err);
     throw err;
   }
@@ -148,7 +157,7 @@ function getTopScoresFallback(limit = 10): ScoreRecord[] {
     if (!saved) return [];
     const scores: ScoreRecord[] = JSON.parse(saved);
     return scores.slice(0, limit);
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('[scoreDb] Erro no fallback getTopScores', err);
     return [];
   }
@@ -172,7 +181,7 @@ export async function saveScore(nickname: string, score: number): Promise<void> 
     );
 
     saveToLocalStorage(db);
-  } catch (err) {
+  } catch (err: unknown) {
     console.warn('[scoreDb] Erro ao salvar com SQLite, usando fallback', err);
     useFallback = true;
     saveScoreFallback(nickname, score);
@@ -211,7 +220,7 @@ export async function getTopScores(limit = 10): Promise<ScoreRecord[]> {
 
     stmt.free();
     return result;
-  } catch (err) {
+  } catch (err: unknown) {
     console.warn('[scoreDb] Erro ao ler com SQLite, usando fallback', err);
     useFallback = true;
     return getTopScoresFallback(limit);
