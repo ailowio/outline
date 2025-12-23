@@ -1,6 +1,15 @@
 import React from 'react';
 import showsData from '../../data/shows.json';
 
+// Helper para parsear data no fuso horário de Fortaleza (UTC-3)
+function parseDateFortaleza(dateString: string): Date {
+  // Parse a data no formato YYYY-MM-DD e cria como meia-noite em Fortaleza
+  // Quando fazemos new Date("YYYY-MM-DD"), o JS interpreta como UTC meia-noite
+  // Para evitar problemas de fuso horário, criamos a data diretamente usando o formato completo
+  // Adiciona "T00:00:00-03:00" para indicar meia-noite em UTC-3 (Fortaleza)
+  return new Date(dateString + 'T00:00:00-03:00');
+}
+
 const Dates = () => {
   return (
     // Dados das próximas datas são carregados de src/data/shows.json
@@ -29,8 +38,8 @@ const Dates = () => {
             >
               <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-12 flex-1">
                 <div className="flex flex-col min-w-[80px]">
-                  <span className="text-outline-neon font-black text-2xl">{new Date(show.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>
-                  <span className="text-gray-600 text-xs font-bold uppercase">{new Date(show.date).getFullYear()}</span>
+                  <span className="text-outline-neon font-black text-2xl">{parseDateFortaleza(show.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Fortaleza' })}</span>
+                  <span className="text-gray-600 text-xs font-bold uppercase">{parseDateFortaleza(show.date).toLocaleDateString('pt-BR', { year: 'numeric', timeZone: 'America/Fortaleza' })}</span>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold group-hover:text-outline-neon transition-colors mb-1">{show.venue}</h3>

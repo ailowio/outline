@@ -17,7 +17,7 @@ function saveScoreFallback(nickname: string, score: number): void {
       id: Date.now(),
       nickname: nickname || 'Anônimo',
       score,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(), // ISO string é sempre UTC, mas é suficiente para ordenação
     };
     scores.push(newScore);
     scores.sort((a, b) => {
